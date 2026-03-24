@@ -1,11 +1,11 @@
 # 🌉 grok-bridge v3.0
 
-Turn **SuperGrok** into a REST API + CLI tool. No API key needed.
+Turn **Grok** (grok.com or X/Twitter) into a REST API + Claude Code MCP tool. No API key needed.
 
 ## How it works
 
 ```
-Your Terminal/Script → Safari JS injection → grok.com → Response extracted via DOM
+Claude Code / HTTP Client → REST API → AppleScript → Safari JS injection → grok.com → DOM extraction
 ```
 
 Two modes:
@@ -16,15 +16,15 @@ Two modes:
 python3 scripts/grok_bridge.py --port 19998
 
 # Query from anywhere
-curl -X POST http://your-mac:19998/chat \
+curl -X POST http://localhost:19998/chat \
   -H "Content-Type: application/json" \
   -d '{"prompt":"What is the mass of the sun?","timeout":60}'
 
 # Health check
-curl http://your-mac:19998/health
+curl http://localhost:19998/health
 
 # Read current conversation
-curl http://your-mac:19998/history
+curl http://localhost:19998/history
 ```
 
 ### CLI (legacy)
@@ -38,11 +38,57 @@ MAC_SSH="ssh user@your-mac" bash scripts/grok_chat.sh "Write a haiku" --timeout 
 
 ## Requirements
 
-- macOS with Safari
+- **macOS** with Safari
+- **Python 3.10+**
 - Logged into [grok.com](https://grok.com) (free or SuperGrok)
-- Safari > Settings > Advanced > Show features for web developers ✓
-- Safari > Develop > Allow JavaScript from Apple Events ✓
 - **No Accessibility permission needed** (v3 uses JS injection, not System Events)
+
+### Safari Setup (required)
+
+**Step 1** — Enable the Develop menu:
+> Safari → Settings → Advanced → check **"Show features for web developers"**
+
+**Step 2** — Allow JavaScript from Apple Events:
+> Safari → Develop → check **"Allow JavaScript from Apple Events"**
+
+## Claude Code (MCP)
+
+This repo includes an MCP server (`mcp_server.py`) that exposes Grok as tools inside Claude Code.
+
+### Install dependencies
+```bash
+pip install mcp httpx
+```
+
+### Register the MCP server
+```bash
+claude mcp add grok-bridge python3 /path/to/grok-bridge/mcp_server.py
+```
+
+Or add to `~/.claude/settings.json` manually:
+```json
+{
+  "mcpServers": {
+    "grok-bridge": {
+      "command": "python3",
+      "args": ["/path/to/grok-bridge/mcp_server.py"]
+    }
+  }
+}
+```
+
+### Available tools
+
+| Tool | Description |
+|------|-------------|
+| `grok_chat` | Send a prompt to Grok on grok.com |
+| `grok_new_conversation` | Start a fresh conversation on grok.com |
+| `x_grok_chat` | Send a prompt to Grok on X (real-time X data) |
+| `x_grok_new_conversation` | Start a fresh conversation on X |
+| `grok_health` | Check if the bridge server is running |
+
+> **Note:** Start the REST API server(s) before using Claude Code tools.
+> For X Grok: `python3 scripts/x_grok_bridge.py --port 19999`
 
 ## API Endpoints
 
@@ -52,6 +98,23 @@ MAC_SSH="ssh user@your-mac" bash scripts/grok_chat.sh "Write a haiku" --timeout 
 | POST | `/new` | Start new conversation |
 | GET | `/health` | Health check (Safari URL, grok status) |
 | GET | `/history` | Read current page conversation |
+
+## Troubleshooting
+
+**`Bridge server not running`**
+→ Start the server first: `python3 scripts/grok_bridge.py`
+
+**`Allow JavaScript from Apple Events` is greyed out**
+→ You must first enable "Show features for web developers" in Safari → Settings → Advanced.
+
+**Safari is not on grok.com**
+→ Open Safari and navigate to [grok.com](https://grok.com) manually before querying.
+
+**Timeout errors**
+→ Increase the timeout parameter: `{"prompt": "...", "timeout": 120}`
+
+**Response is cut off or empty**
+→ Grok may still be generating. Retry with a higher timeout or start a new conversation (`POST /new`).
 
 ## Version History
 
@@ -99,7 +162,8 @@ Zero permissions, zero dependencies, pure JavaScript injection via AppleScript.
 
 ## Credits
 
-v3 architecture designed by Claude Opus 4.6 (via [Antigravity](https://antigravity.so)), System Events bypass by 小灵 🦞.
+Forked from [ythx-101/grok-bridge](https://github.com/ythx-101/grok-bridge).
+MCP server and X Grok support added by [dengwx11](https://github.com/dengwx11).
 
 ## License
 
