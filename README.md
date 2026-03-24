@@ -53,16 +53,24 @@ MAC_SSH="ssh user@your-mac" bash scripts/grok_chat.sh "Write a haiku" --timeout 
 **Step 2** — Allow JavaScript from Apple Events:
 > Safari → Develop → check **"Allow JavaScript from Apple Events"**
 
-## Claude Code Skill (`/grok-bridge`)
+## Claude Code Skills
 
-Install as a Claude Code skill to invoke with `/grok-bridge`:
+Two separate skills are available — install one or both:
+
+| Skill | Invoke with | Use for |
+|-------|-------------|---------|
+| `SKILL.md` | `/grok-bridge` | General questions on grok.com |
+| `X_SKILL.md` | `/x-grok` | Real-time X/Twitter trends, news, market sentiment |
 
 ```bash
+# Install /grok-bridge skill
 mkdir -p ~/.claude/skills/grok-bridge
 cp SKILL.md ~/.claude/skills/grok-bridge/SKILL.md
-```
 
-Then in Claude Code, type `/grok-bridge` followed by your question. Claude will automatically route it to the right Grok endpoint (grok.com or X Grok).
+# Install /x-grok skill
+mkdir -p ~/.claude/skills/x-grok
+cp X_SKILL.md ~/.claude/skills/x-grok/SKILL.md
+```
 
 > **Requires** the MCP server to be registered and bridge servers running (see below).
 
