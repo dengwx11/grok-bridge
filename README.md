@@ -1,6 +1,8 @@
-# 🌉 grok-bridge v3.0
+# 🌉 grok-bridge v4.0
 
 Turn **Grok** (grok.com or X/Twitter) into a REST API + Claude Code MCP tool. No API key needed.
+
+Query Grok directly from Claude Code — including **X Grok** for real-time trending topics, live market sentiment, and breaking news from X/Twitter.
 
 ## How it works
 
@@ -50,6 +52,19 @@ MAC_SSH="ssh user@your-mac" bash scripts/grok_chat.sh "Write a haiku" --timeout 
 
 **Step 2** — Allow JavaScript from Apple Events:
 > Safari → Develop → check **"Allow JavaScript from Apple Events"**
+
+## Claude Code Skill (`/grok-bridge`)
+
+Install as a Claude Code skill to invoke with `/grok-bridge`:
+
+```bash
+mkdir -p ~/.claude/skills/grok-bridge
+cp SKILL.md ~/.claude/skills/grok-bridge/SKILL.md
+```
+
+Then in Claude Code, type `/grok-bridge` followed by your question. Claude will automatically route it to the right Grok endpoint (grok.com or X Grok).
+
+> **Requires** the MCP server to be registered and bridge servers running (see below).
 
 ## Claude Code (MCP)
 
