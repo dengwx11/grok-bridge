@@ -47,8 +47,8 @@ class GrokBridge:
     def _find_input(s):
         """Find the input element using multiple selectors"""
         for sel in INPUT_SELECTORS:
-            r=s._js(f"!!document.querySelector('{sel}')")
-            if r=='true':return sel
+            r=s._js(f"document.querySelector('{sel}') ? 'yes' : 'no'")
+            if r=='yes':return sel
         return None
     def _wait_ready(s,timeout=20):
         start=time.time()
